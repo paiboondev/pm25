@@ -1,0 +1,529 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title> Air Purifier (DIY) Automation Dashboard | Firebase + ESP32 </title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/3.3.2/firebase.js"></script>
+
+<!-- canvasjs -->
+<script src="js/jquery.canvasjs.min.js"></script>
+
+<!-- Material Design fonts -->
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  
+<!-- Bootstrap -->
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/bootstrap-material-design.min.css">
+<link rel="stylesheet" href="css/ripples.min.css">
+<script src="js/bootstrap.min.js"></script>
+<script src="js/material.min.js"></script>
+<script src="js/ripples.min.js"></script>
+
+<!-- Animate.css -->
+<link rel="stylesheet" href="css/animate.min.css">
+
+<script>
+var chart, toOffline;
+var newItems = false;
+// Initialize Firebase
+var config = {
+	apiKey: "AIzaSyCX2q1OlcL5lRYfCng03L7mfvDEZ8YI6r0",
+  	authDomain: "esp32-pm25-f710c.firebaseapp.com",
+  	databaseURL: "https://esp32-pm25-f710c-default-rtdb.firebaseio.com",
+  	projectId: "esp32-pm25-f710c",
+ 	storageBucket: "esp32-pm25-f710c.appspot.com",
+  	messagingSenderId: "770266144292",
+  	appId: "1:770266144292:web:d49ce3a77cce44629d82b1",
+  	measurementId: "G-N7CG5QFGH6"
+};
+
+$(document).ready(function(e) {
+	$.material.init()
+	
+	chart = new CanvasJS.Chart("chartContainer", {
+		title: {
+			text: "Temperature & Humidity"
+		},
+		axisX:{  
+			valueFormatString: "HH:mm"
+		},
+		axisY: {
+			valueFormatString: "0.0#"
+		},
+		toolTip: {
+			shared: true,
+			contentFormatter: function (e) {
+				var content = CanvasJS.formatDate(e.entries[0].dataPoint.x, "HH:mm:ss") + "<br>";
+				content += "<strong>Temperature</strong>: " + e.entries[0].dataPoint.y + " &deg;C<br>";
+				content += "<strong>Humidity</strong>: " + e.entries[1].dataPoint.y + " %";
+				return content;
+			}
+		},
+		animationEnabled: true,
+		data: [
+			{
+				type: "spline", //change it to line, area, column, pie, etc
+				dataPoints: []
+			},
+			{
+				type: "spline", //change it to line, area, column, pie, etc
+				dataPoints: []
+			}
+		]
+	});
+	chart.render();	
+	
+	firebase.initializeApp(config);
+		
+	var airflow_log = firebase.database().ref().child("pm25_log");
+	var aauto_mode = firebase.database().ref().child("aauto_mode");
+
+	airflow_log.on("child_added", function(sanp) {
+		if (!newItems) return;
+		var row = sanp.val();
+		
+		row.time = new Date(row.time);
+		chart.options.data[0].dataPoints.push({x: row.time, y: row.aqi});
+		chart.options.data[1].dataPoints.push({x: row.time, y: row.pm25});
+		chart.render();
+			
+
+		//$("#pm25 > .content").html(row.pm25);
+		$("#aqi > .content").text("AQI: " + row.aqi);
+
+		if (row.pm25 >= 301 && row.pm25 <= 500 ) {
+			$("#pm25").removeClass("good").addClass("hazardous");
+			$("#pm25").removeClass("moderate").addClass("hazardous");
+			$("#pm25").removeClass("unhealthy_sg").addClass("hazardous");
+			$("#pm25").removeClass("unhealthy").addClass("hazardous");
+			$("#pm25").removeClass("vy_unhealthy").addClass("hazardous");
+			$("#pm25").removeClass("hazardous").addClass("hazardous");
+			$("#img_pm25").attr('src','img/in06.png');
+			$("#pm25 > .content").html("Hazardous");
+			$("#pm25 > .title").html("คุณภาพอากาศอันตรายต่อสุขภาพ");
+		} else if (row.pm25 >= 201 && row.pm25 <= 300) {
+			$("#pm25").removeClass("good").addClass("vy_unhealthy");
+			$("#pm25").removeClass("moderate").addClass("vy_unhealthy");
+			$("#pm25").removeClass("unhealthy_sg").addClass("vy_unhealthy");
+			$("#pm25").removeClass("unhealthy").addClass("vy_unhealthy");
+			$("#pm25").removeClass("vy_unhealthy").addClass("vy_unhealthy");
+			$("#pm25").removeClass("hazardous").addClass("vy_unhealthy");
+			$("#img_pm25").attr('src','img/in05.png');
+			$("#pm25 > .content").html("Very Unhealthy");
+			$("#pm25 > .title").html("คุณภาพอากาศมีผลต่อสุขภาพมาก");
+		} else if (row.pm25 >= 151 && row.pm25 <= 200) {
+			$("#pm25").removeClass("good").addClass("unhealthy");
+			$("#pm25").removeClass("moderate").addClass("unhealthy");
+			$("#pm25").removeClass("unhealthy_sg").addClass("hunhealthy");
+			$("#pm25").removeClass("unhealthy").addClass("unhealthy");
+			$("#pm25").removeClass("vy_unhealthy").addClass("unhealthy");
+			$("#pm25").removeClass("hazardous").addClass("unhealthy");
+			$("#img_pm25").attr('src','img/in04.png');
+			$("#pm25 > .content").html("Unhealthy");
+			$("#pm25 > .title").html("คุณภาพอากาศมีผลต่อสุขภาพ");
+		} else if (row.pm25 >= 101 && row.pm25 <= 150) {
+			$("#pm25").removeClass("good").addClass("unhealthy_sg");
+			$("#pm25").removeClass("moderate").addClass("unhealthy_sg");
+			$("#pm25").removeClass("unhealthy_sg").addClass("unhealthy_sg");
+			$("#pm25").removeClass("unhealthy").addClass("unhealthy_sg");
+			$("#pm25").removeClass("vy_unhealthy").addClass("unhealthy_sg");
+			$("#pm25").removeClass("hazardous").addClass("unhealthy_sg");
+			$("#img_pm25").attr('src','img/in03.png');
+			$("#pm25 > .content").html("Unhealthy Sensitive");
+			$("#pm25 > .title").html("คุณภาพอากาศมีผลต่อผู้ป่วย");
+		} else if (row.pm25 >= 51 && row.pm25 <= 100) {
+			$("#pm25").removeClass("good").addClass("moderate");
+			$("#pm25").removeClass("moderate").addClass("moderate");
+			$("#pm25").removeClass("unhealthy_sg").addClass("moderate");
+			$("#pm25").removeClass("unhealthy").addClass("moderate");
+			$("#pm25").removeClass("vy_unhealthy").addClass("moderate");
+			$("#pm25").removeClass("hazardous").addClass("moderate");
+			$("#img_pm25").attr('src','img/in02.png');
+			$("#pm25 > .content").html("Moderate");
+			$("#pm25 > .title").html("คุณภาพอากาศปานกลาง");
+		} else if (row.pm25 >= 0 && row.pm25 <= 50){
+			$("#pm25").removeClass("good").addClass("good");
+			$("#pm25").removeClass("moderate").addClass("good");
+			$("#pm25").removeClass("unhealthy_sg").addClass("good");
+			$("#pm25").removeClass("unhealthy").addClass("good");
+			$("#pm25").removeClass("vy_unhealthy").addClass("good");
+			$("#pm25").removeClass("hazardous").addClass("good");
+			$("#img_pm25").attr('src','img/in01.png');
+			$("#pm25 > .content").html("Good");
+			$("#pm25 > .title").html("คุณภาพอากาศดี");
+		}
+
+		if (row.auto1 == 1 ) {
+			$("#auto > .content").text("ON");
+			$("#auto").removeClass("danger").addClass("success");
+		}	else {
+			$("#auto > .content").text("OFF");
+			$("#auto").removeClass("success").addClass("danger");
+		}
+
+		if (row.fan1 == 1 ) {
+			$("#fan1").removeClass("success").addClass("info");
+			$("#fan01").attr('src','img/airflow_on.gif');
+			$("#fan02").attr('src','img/f1.png');
+		}	else if (row.fan1 == 2 ){
+			$("#fan1").removeClass("success").addClass("info");
+			$("#fan01").attr('src','img/airflow_on.gif');
+			$("#fan02").attr('src','img/f2.png');
+		} 	else if (row.fan1 == 3 ){
+			$("#fan1").removeClass("success").addClass("info");
+			$("#fan01").attr('src','img/airflow_on.gif');
+			$("#fan02").attr('src','img/f3.png');
+		}	else if (row.fan1 == 4 ){
+			$("#fan1").removeClass("success").addClass("info");
+			$("#fan01").attr('src','img/airflow_on.gif');
+			$("#fan02").attr('src','img/f4.png');
+		}	else if (row.fan1 == 5 ){
+			$("#fan1").removeClass("success").addClass("info");
+			$("#fan01").attr('src','img/airflow_on.gif');
+			$("#fan02").attr('src','img/f5.png');
+		}
+		else {
+			$("#fan1").removeClass("info").addClass("success");
+			$("#fan01").attr('src','img/airflow_off.gif');
+			$("#fan02").attr('src','img/f0.png');
+		}
+		
+
+		$("#status").removeClass("danger").addClass("success");
+		$("#status > .content").text("ONLINE");
+		
+		setTimeoffline();
+	});
+	
+	var now = new Date();
+	airflow_log.orderByChild("time").startAt(now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate()).once("value", function(sanp) {
+		console.log(sanp);
+		newItems = true;
+		var dataRows = sanp.val();
+		var lastRows = 0;
+		$.each(dataRows, function(index, row) {
+			row.time = new Date(row.time);
+			chart.options.data[0].dataPoints.push({x: row.time, y: row.temperature});
+			chart.options.data[1].dataPoints.push({x: row.time, y: row.humidity});
+			 lastRows = row;
+		});
+		chart.render();
+		
+		var Arow = lastRows;
+		$("#pm25 > .title").html(Arow.pm25);
+		$("#aqi > .content").html("AQI: " + Arow.aqi);
+
+		if (Arow.pm25 >= 301 && Arow.pm25 <= 500 ) {
+			$("#pm25").removeClass("good").addClass("hazardous");
+			$("#pm25").removeClass("moderate").addClass("hazardous");
+			$("#pm25").removeClass("unhealthy_sg").addClass("hazardous");
+			$("#pm25").removeClass("unhealthy").addClass("hazardous");
+			$("#pm25").removeClass("vy_unhealthy").addClass("hazardous");
+			$("#pm25").removeClass("hazardous").addClass("hazardous");
+			$("#img_pm25").attr('src','img/in06.png');
+			$("#pm25 > .content").html("Hazardous");
+			$("#pm25 > .title").html("คุณภาพอากาศอันตรายต่อสุขภาพ");
+		} else if (Arow.pm25 >= 201 && Arow.pm25 <= 300) {
+			$("#pm25").removeClass("good").addClass("vy_unhealthy");
+			$("#pm25").removeClass("moderate").addClass("vy_unhealthy");
+			$("#pm25").removeClass("unhealthy_sg").addClass("vy_unhealthy");
+			$("#pm25").removeClass("unhealthy").addClass("vy_unhealthy");
+			$("#pm25").removeClass("vy_unhealthy").addClass("vy_unhealthy");
+			$("#pm25").removeClass("hazardous").addClass("vy_unhealthy");
+			$("#img_pm25").attr('src','img/in05.png');
+			$("#pm25 > .content").html("Very Unhealthy");
+			$("#pm25 > .title").html("คุณภาพอากาศมีผลต่อสุขภาพมาก");
+		} else if (Arow.pm25 >= 151 && Arow.pm25 <= 200) {
+			$("#pm25").removeClass("good").addClass("unhealthy");
+			$("#pm25").removeClass("moderate").addClass("unhealthy");
+			$("#pm25").removeClass("unhealthy_sg").addClass("hunhealthy");
+			$("#pm25").removeClass("unhealthy").addClass("unhealthy");
+			$("#pm25").removeClass("vy_unhealthy").addClass("unhealthy");
+			$("#pm25").removeClass("hazardous").addClass("unhealthy");
+			$("#img_pm25").attr('src','img/in04.png');
+			$("#pm25 > .content").html("Unhealthy");
+			$("#pm25 > .title").html("คุณภาพอากาศมีผลต่อสุขภาพ");
+		} else if (Arow.pm25 >= 101 && Arow.pm25 <= 150) {
+			$("#pm25").removeClass("good").addClass("unhealthy_sg");
+			$("#pm25").removeClass("moderate").addClass("unhealthy_sg");
+			$("#pm25").removeClass("unhealthy_sg").addClass("unhealthy_sg");
+			$("#pm25").removeClass("unhealthy").addClass("unhealthy_sg");
+			$("#pm25").removeClass("vy_unhealthy").addClass("unhealthy_sg");
+			$("#pm25").removeClass("hazardous").addClass("unhealthy_sg");
+			$("#img_pm25").attr('src','img/in03.png');
+			$("#pm25 > .content").html("Unhealthy Sensitive Group");
+			$("#pm25 > .title").html("คุณภาพอากาศมีผลต่อผู้ป่วย");
+		} else if (Arow.pm25 >= 51 && Arow.pm25 <= 100) {
+			$("#pm25").removeClass("good").addClass("moderate");
+			$("#pm25").removeClass("moderate").addClass("moderate");
+			$("#pm25").removeClass("unhealthy_sg").addClass("moderate");
+			$("#pm25").removeClass("unhealthy").addClass("moderate");
+			$("#pm25").removeClass("vy_unhealthy").addClass("moderate");
+			$("#pm25").removeClass("hazardous").addClass("moderate");
+			$("#img_pm25").attr('src','img/in02.png');
+			$("#pm25 > .content").html("Moderate");
+			$("#pm25 > .title").html("คุณภาพอากาศปานกลาง");
+		} else if (Arow.pm25 >= 0 && Arow.pm25 <= 50){
+			$("#pm25").removeClass("good").addClass("good");
+			$("#pm25").removeClass("moderate").addClass("good");
+			$("#pm25").removeClass("unhealthy_sg").addClass("good");
+			$("#pm25").removeClass("unhealthy").addClass("good");
+			$("#pm25").removeClass("vy_unhealthy").addClass("good");
+			$("#pm25").removeClass("hazardous").addClass("good");
+			$("#img_pm25").attr('src','img/in01.png');
+			$("#pm25 > .content").html("Good");
+			$("#pm25 > .title").html("คุณภาพอากาศดี");
+		}
+
+		if (Arow.auto1 == 1 ) {
+			$("#auto > .content").text("ON");
+			$("#auto").removeClass("danger").addClass("success");
+		}	else {
+			$("#auto > .content").text("OFF");
+			$("#auto").removeClass("success").addClass("danger");
+		}
+
+		if (Arow.fan1 == 1 ) {
+			$("#fan1").removeClass("success").addClass("info");
+			$("#fan01").attr('src','img/airflow_on.gif');
+			$("#fan02").attr('src','img/f1.png');
+		}	else if (Arow.fan1 == 2 ){
+			$("#fan1").removeClass("success").addClass("info");
+			$("#fan01").attr('src','img/airflow_on.gif');
+			$("#fan02").attr('src','img/f2.png');
+		} 	else if (Arow.fan1 == 3 ){
+			$("#fan1").removeClass("success").addClass("info");
+			$("#fan01").attr('src','img/airflow_on.gif');
+			$("#fan02").attr('src','img/f3.png');
+		}	else if (Arow.fan1 == 4 ){
+			$("#fan1").removeClass("success").addClass("info");
+			$("#fan01").attr('src','img/airflow_on.gif');
+			$("#fan02").attr('src','img/f4.png');
+		}	else if (Arow.fan1 == 5 ){
+			$("#fan1").removeClass("success").addClass("info");
+			$("#fan01").attr('src','img/airflow_on.gif');
+			$("#fan02").attr('src','img/f5.png');
+		}
+		else {
+			$("#fan1").removeClass("info").addClass("success");
+			$("#fan01").attr('src','img/airflow_off.gif');
+			$("#fan02").attr('src','img/f0.png');
+		}
+		
+
+		var now = new Date();
+		Arow.time = new Date(Arow.time);
+		if (Math.round(now) -  Math.round(Arow.time) < (2 * 60 * 1000)) {
+			$("#status").removeClass("danger").addClass("success");
+			$("#status > .content").text("ONLINE");
+		} else {
+			$("#status").removeClass("success").addClass("danger");
+			$("#status > .content").text("OFFLINE");
+		}
+		
+		setTimeoffline();
+	});
+	
+	
+		$("#auto_mode").click(function () {
+				var firebase_auto = firebase.database().ref().child("aauto_mode");
+				if (aauto_mode == 1) {
+					firebase_auto.set(0);
+					aauto_mode = 0;
+					$("#auto > .content").text("OFF");
+				 	$("#auto").removeClass("success").addClass("danger");
+				} else {
+					firebase_auto.set(1);
+					aauto_mode = 1;
+					$("#auto > .content").text("ON");
+				 	$("#auto").removeClass("danger").addClass("success");
+				}
+		});
+
+
+
+});
+
+var setTimeoffline = function() {
+	if (typeof toOffline === "number") clearTimeout(toOffline);
+	
+	toOffline = setTimeout(function() {
+		$("#status").removeClass("success").addClass("danger");
+		$("#status > .content").text("OFFLINE");
+	}, 2 * 60 * 1000);
+}
+
+
+</script>
+
+<style>
+.dialog {
+	width: 100%;
+	border-radius: 4px;
+	margin-bottom: 20px;
+	box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.12), 0 1px 6px 0 rgba(0, 0, 0, 0.12);
+}
+.dialog > .content {
+	padding: 30px 0;
+	border-radius: 6px 6px 0 0;
+	font-size: 45px;
+	color: rgba(255,255,255, 0.84);
+	text-align: center;
+}
+.dialog > .contentmo {
+	padding: 3px 0;
+	border-radius: 6px 6px 0 0;
+	font-size: 45px;
+	color: rgba(255,255,255, 0.84);
+	text-align: center;
+}
+.dialog.primary > .content{
+	background: #00aa9a;
+}
+.dialog.success > .content {
+	background: #59b75c;
+}
+.dialog.info > .content {
+	background: #03a9f4;
+}
+.dialog.warning > .content {
+	background: #f7a709;
+}
+.dialog.danger > .content {
+	background: #f44336;
+}
+.dialog.good > .content {
+	background: #abd25f;
+}
+.dialog.moderate> .content {
+	background: #f7d460;
+}
+.dialog.unhealthy_sg> .content {
+	background: #fc9956;
+}
+.dialog.unhealthy> .content {
+	background: #f6676b;
+}
+.dialog.vy_unhealthy> .content {
+	background: #a37db8;
+}
+.dialog.hazardous> .content {
+	background: #a07684;
+}
+.dialog > .title {
+	background: #FFF;
+	border-radius: 0 0 6px 6px;
+	font-size: 22px;
+	color: rgba(0,0,0, 0.87);
+	text-align: center;
+	padding: 10px 0;
+	/* box-shadow: 0px 10px 8px -10px rgba(0, 0, 0, 0.4) inset; */
+	font-weight: bold;
+}
+.nav-tabs {
+	margin-bottom: 20px;
+}
+
+</style>
+</head>
+
+<body>
+  <div class="container">
+    <h1> Air Purifier (DIY) Automation Dashboard <small>[ Firebase + ESP32 ]</small></h1>
+    <hr />
+     
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+      <li role="presentation" class="active"><a href="#overview" aria-controls="home" role="tab" data-toggle="tab">Overview</a></li>
+      <li role="presentation"><a href="#history" aria-controls="profile" role="tab" data-toggle="tab">History</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div role="tabpanel" class="tab-pane active" id="overview">
+        <div class="row">
+           <!-- <div class="col-sm-4">
+             <div class="dialog primary fadeIn animated" id="pm25">
+               <div class="content">00.0</div>
+               <div class="title">PM 2.5 [ &micro;g/m&sup3 ]</div>
+             </div>
+           </div> -->
+			  <div class="col-sm-3">
+				<div class="dialog success fadeIn animated" id="status">
+				  <div class="content">???</div>
+				  <div class="title">Device</div>
+				</div>
+			 </div>
+           <div class="col-sm-3">
+				<div class="dialog good fadeIn animated" id="pm25_1">				  
+					<div class="contentmo">
+						<center>		
+							<img src="img/in01.png" id="img_pm25"  width="45%">		
+						</center>	
+					</div>
+				  <div class="title">Indicator</div>
+				</div>
+			 </div>
+
+			 <div class="col-sm-6">
+				<div class="dialog good fadeIn animated" id="pm25">				  
+					<div class="content">			
+						???
+					</div>
+				  <div class="title">PM 2.5 [ &micro;g/m&sup3 ]</div>
+				</div>
+			 </div>
+
+			 <div class="col-sm-3">
+				<div class="dialog success fadeIn animated" id="auto">
+				  <div class="content">???</div>
+				  <div class="title">
+					<button id = "auto_mode" class="Button" >Automation-Mode</button>
+				  </div>
+				</div>
+			 </div>
+
+			  <div class="col-sm-3">
+				<div class="dialog info fadeIn animated" id="aqi">				  
+					<div class="content">???</div>
+				  <div class="title">ดัชนีคุณภาพอากาศ</div>
+				</div>
+			 </div>
+			 
+			 <div class="col-sm-6">
+				<div class="dialog success fadeIn animated" id="fan1">
+				  <div class="content">
+						<center>
+							<img src="img/airflow_off.gif" id="fan01"  width="11%">
+							<img src="img/f0.png" id="fan02"  width="38%">
+						</center>
+					</div>
+				  <div class="title">Speed AirFlow</div>
+				</div>
+			 </div>
+
+			
+
+
+        </div>
+      </div>
+
+		
+
+      <div role="tabpanel" class="tab-pane" id="history">
+        <div id="chartContainer" style="height: 100%; width: 100%;"></div>
+      </div>
+    </div>
+
+	
+
+  </div>
+</body>
+</html>
