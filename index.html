@@ -95,10 +95,10 @@ $(document).ready(function(e) {
 		chart.render();
 			
 
-		//$("#pm25 > .content").html(row.pm25);
+		$("#pm25 > .content").html(row.pm25);
 		$("#aqi > .content").text("AQI: " + row.aqi);
 
-		if (row.pm25 >= 301 && row.pm25 <= 500 ) {
+		if (row.aqi >= 301 ) {
 			$("#pm25").removeClass("good").addClass("hazardous");
 			$("#pm25").removeClass("moderate").addClass("hazardous");
 			$("#pm25").removeClass("unhealthy_sg").addClass("hazardous");
@@ -108,7 +108,7 @@ $(document).ready(function(e) {
 			$("#img_pm25").attr('src','img/in06.png');
 			$("#pm25 > .content").html("Hazardous");
 			$("#pm25 > .title").html("คุณภาพอากาศอันตรายต่อสุขภาพ");
-		} else if (row.pm25 >= 201 && row.pm25 <= 300) {
+		} else if (row.aqi >= 201 && row.aqi <= 300) {
 			$("#pm25").removeClass("good").addClass("vy_unhealthy");
 			$("#pm25").removeClass("moderate").addClass("vy_unhealthy");
 			$("#pm25").removeClass("unhealthy_sg").addClass("vy_unhealthy");
@@ -118,7 +118,7 @@ $(document).ready(function(e) {
 			$("#img_pm25").attr('src','img/in05.png');
 			$("#pm25 > .content").html("Very Unhealthy");
 			$("#pm25 > .title").html("คุณภาพอากาศมีผลต่อสุขภาพมาก");
-		} else if (row.pm25 >= 151 && row.pm25 <= 200) {
+		} else if (row.aqi >= 151 && row.aqi <= 200) {
 			$("#pm25").removeClass("good").addClass("unhealthy");
 			$("#pm25").removeClass("moderate").addClass("unhealthy");
 			$("#pm25").removeClass("unhealthy_sg").addClass("hunhealthy");
@@ -128,7 +128,7 @@ $(document).ready(function(e) {
 			$("#img_pm25").attr('src','img/in04.png');
 			$("#pm25 > .content").html("Unhealthy");
 			$("#pm25 > .title").html("คุณภาพอากาศมีผลต่อสุขภาพ");
-		} else if (row.pm25 >= 101 && row.pm25 <= 150) {
+		} else if (row.aqi >= 101 && row.aqi <= 150) {
 			$("#pm25").removeClass("good").addClass("unhealthy_sg");
 			$("#pm25").removeClass("moderate").addClass("unhealthy_sg");
 			$("#pm25").removeClass("unhealthy_sg").addClass("unhealthy_sg");
@@ -138,7 +138,7 @@ $(document).ready(function(e) {
 			$("#img_pm25").attr('src','img/in03.png');
 			$("#pm25 > .content").html("Unhealthy Sensitive");
 			$("#pm25 > .title").html("คุณภาพอากาศมีผลต่อผู้ป่วย");
-		} else if (row.pm25 >= 51 && row.pm25 <= 100) {
+		} else if (row.aqi >= 51 && row.aqi <= 100) {
 			$("#pm25").removeClass("good").addClass("moderate");
 			$("#pm25").removeClass("moderate").addClass("moderate");
 			$("#pm25").removeClass("unhealthy_sg").addClass("moderate");
@@ -148,7 +148,7 @@ $(document).ready(function(e) {
 			$("#img_pm25").attr('src','img/in02.png');
 			$("#pm25 > .content").html("Moderate");
 			$("#pm25 > .title").html("คุณภาพอากาศปานกลาง");
-		} else if (row.pm25 >= 0 && row.pm25 <= 50){
+		} else if (row.aqi >= 0 && row.aqi <= 50){
 			$("#pm25").removeClass("good").addClass("good");
 			$("#pm25").removeClass("moderate").addClass("good");
 			$("#pm25").removeClass("unhealthy_sg").addClass("good");
@@ -220,7 +220,7 @@ $(document).ready(function(e) {
 		$("#pm25 > .title").html(Arow.pm25);
 		$("#aqi > .content").html("AQI: " + Arow.aqi);
 
-		if (Arow.pm25 >= 301 && Arow.pm25 <= 500 ) {
+		if (Arow.aqi >= 301 ) {
 			$("#pm25").removeClass("good").addClass("hazardous");
 			$("#pm25").removeClass("moderate").addClass("hazardous");
 			$("#pm25").removeClass("unhealthy_sg").addClass("hazardous");
@@ -230,7 +230,7 @@ $(document).ready(function(e) {
 			$("#img_pm25").attr('src','img/in06.png');
 			$("#pm25 > .content").html("Hazardous");
 			$("#pm25 > .title").html("คุณภาพอากาศอันตรายต่อสุขภาพ");
-		} else if (Arow.pm25 >= 201 && Arow.pm25 <= 300) {
+		} else if (Arow.aqi >= 201 && Arow.aqi <= 300) {
 			$("#pm25").removeClass("good").addClass("vy_unhealthy");
 			$("#pm25").removeClass("moderate").addClass("vy_unhealthy");
 			$("#pm25").removeClass("unhealthy_sg").addClass("vy_unhealthy");
@@ -240,7 +240,7 @@ $(document).ready(function(e) {
 			$("#img_pm25").attr('src','img/in05.png');
 			$("#pm25 > .content").html("Very Unhealthy");
 			$("#pm25 > .title").html("คุณภาพอากาศมีผลต่อสุขภาพมาก");
-		} else if (Arow.pm25 >= 151 && Arow.pm25 <= 200) {
+		} else if (Arow.aqi >= 151 && Arow.aqi <= 200) {
 			$("#pm25").removeClass("good").addClass("unhealthy");
 			$("#pm25").removeClass("moderate").addClass("unhealthy");
 			$("#pm25").removeClass("unhealthy_sg").addClass("hunhealthy");
@@ -250,7 +250,7 @@ $(document).ready(function(e) {
 			$("#img_pm25").attr('src','img/in04.png');
 			$("#pm25 > .content").html("Unhealthy");
 			$("#pm25 > .title").html("คุณภาพอากาศมีผลต่อสุขภาพ");
-		} else if (Arow.pm25 >= 101 && Arow.pm25 <= 150) {
+		} else if (Arow.aqi >= 101 && Arow.aqi <= 150) {
 			$("#pm25").removeClass("good").addClass("unhealthy_sg");
 			$("#pm25").removeClass("moderate").addClass("unhealthy_sg");
 			$("#pm25").removeClass("unhealthy_sg").addClass("unhealthy_sg");
@@ -260,7 +260,7 @@ $(document).ready(function(e) {
 			$("#img_pm25").attr('src','img/in03.png');
 			$("#pm25 > .content").html("Unhealthy Sensitive Group");
 			$("#pm25 > .title").html("คุณภาพอากาศมีผลต่อผู้ป่วย");
-		} else if (Arow.pm25 >= 51 && Arow.pm25 <= 100) {
+		} else if (Arow.aqi >= 51 && Arow.aqi <= 100) {
 			$("#pm25").removeClass("good").addClass("moderate");
 			$("#pm25").removeClass("moderate").addClass("moderate");
 			$("#pm25").removeClass("unhealthy_sg").addClass("moderate");
@@ -270,7 +270,7 @@ $(document).ready(function(e) {
 			$("#img_pm25").attr('src','img/in02.png');
 			$("#pm25 > .content").html("Moderate");
 			$("#pm25 > .title").html("คุณภาพอากาศปานกลาง");
-		} else if (Arow.pm25 >= 0 && Arow.pm25 <= 50){
+		} else if (Arow.aqi >= 0 && Arow.aqi <= 50){
 			$("#pm25").removeClass("good").addClass("good");
 			$("#pm25").removeClass("moderate").addClass("good");
 			$("#pm25").removeClass("unhealthy_sg").addClass("good");
@@ -461,6 +461,7 @@ var setTimeoffline = function() {
 				  <div class="title">Device</div>
 				</div>
 			 </div>
+			 
            <div class="col-sm-3">
 				<div class="dialog good fadeIn animated" id="pm25_1">				  
 					<div class="contentmo">
