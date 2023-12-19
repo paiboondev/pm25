@@ -1,0 +1,67 @@
+<html>
+<head>
+   <title>
+      Login page
+   </title>
+	<!-- Material Design fonts -->
+	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+   	<!-- Bootstrap -->
+      <link rel="stylesheet" href="css/bootstrap.min.css">
+      <!-- Animate.css -->
+      <link rel="stylesheet" href="css/animate.min.css">
+
+   <!-- Custom CSS -->
+<link rel="stylesheet" href="css/custom.css">
+</head>
+
+<body>
+   <div class="container">
+      <h1> Air Purifier (DIY) Automation Dashboard <small>[ Firebase + ESP32 ]</small></h1>
+      <hr />
+
+      <form class="modal-content animate" name="login">
+         <!-- <div class="imgcontainer">
+            <span onclick="document.getElementById('id01').style.display='none'" class="close"
+               title="Close Modal">&times;</span>
+            <img src="img_avatar2.png" alt="Avatar" class="avatar">
+         </div> -->
+
+         <div class="container">
+            <label for="userid"><b>Username</b></label>
+            <input type="text" placeholder="Enter Username" name="userid" required>
+
+            <label for="pswrd"><b>Password</b></label>
+            <input type="password" placeholder="Enter Password" name="pswrd" required>
+
+            <!-- <button type="submit" onclick="check(this.form)" value="Login">Login</button> -->
+            
+            <input type="button" onclick="check(this.form)" value="Login"/>
+            <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
+            
+            <label>
+               <input type="checkbox" checked="checked" name="remember"> Remember me
+            </label>
+         </div>
+
+
+      </form>
+   </div>
+
+
+   <script language="javascript">
+      function check(form)/*function to check userid & password*/ {
+         /*the following code checkes whether the entered userid and password are matching*/
+         if (form.userid.value == "admin" && form.pswrd.value == "admin") {
+            window.open('admin.html', "_self")/*opens the target page while Id & password matches*/
+         }
+         else {
+            alert("Error Password or Username")/*displays error message*/
+         }
+      }
+
+   </script>
+</body>
+
+</html>
