@@ -85,6 +85,7 @@
 
 			var airflow_log = firebase.database().ref().child("pm25_log");
 			var aauto_mode = firebase.database().ref().child("aauto_mode");
+			var afan1_m = firebase.database().ref().child("afan1_m");
 
 			airflow_log.on("child_added", function (sanp) {
 				if (!newItems) return;
@@ -171,29 +172,29 @@
 
 				if (row.fan1 == 1) {
 					$("#fan1").removeClass("success").addClass("info");
-					$("#fan01").attr('src', 'img/airflow_on.gif');
-					$("#fan02").attr('src', 'img/f1.png');
+					$("#fan11").attr('src', 'img/airflow_on.gif');
+					$("#fan12").attr('src', 'img/f1.png');
 				} else if (row.fan1 == 2) {
 					$("#fan1").removeClass("success").addClass("info");
-					$("#fan01").attr('src', 'img/airflow_on.gif');
-					$("#fan02").attr('src', 'img/f2.png');
+					$("#fan11").attr('src', 'img/airflow_on.gif');
+					$("#fan12").attr('src', 'img/f2.png');
 				} else if (row.fan1 == 3) {
 					$("#fan1").removeClass("success").addClass("info");
-					$("#fan01").attr('src', 'img/airflow_on.gif');
-					$("#fan02").attr('src', 'img/f3.png');
+					$("#fan11").attr('src', 'img/airflow_on.gif');
+					$("#fan12").attr('src', 'img/f3.png');
 				} else if (row.fan1 == 4) {
 					$("#fan1").removeClass("success").addClass("info");
-					$("#fan01").attr('src', 'img/airflow_on.gif');
-					$("#fan02").attr('src', 'img/f4.png');
+					$("#fan11").attr('src', 'img/airflow_on.gif');
+					$("#fan12").attr('src', 'img/f4.png');
 				} else if (row.fan1 == 5) {
 					$("#fan1").removeClass("success").addClass("info");
-					$("#fan01").attr('src', 'img/airflow_on.gif');
-					$("#fan02").attr('src', 'img/f5.png');
+					$("#fan11").attr('src', 'img/airflow_on.gif');
+					$("#fan12").attr('src', 'img/f5.png');
 				}
 				else {
 					$("#fan1").removeClass("info").addClass("success");
-					$("#fan01").attr('src', 'img/airflow_off.gif');
-					$("#fan02").attr('src', 'img/f0.png');
+					$("#fan11").attr('src', 'img/airflow_off.gif');
+					$("#fan12").attr('src', 'img/f0.png');
 				}
 
 
@@ -202,6 +203,69 @@
 
 				setTimeoffline();
 			});
+
+		// ------------------------- Manual Fan 1 -------------------------------------
+
+			$("#speed_fan1_s0").click(function () {
+				var firebase_fan1_m = firebase.database().ref().child("afan1_m");
+				if (afan1_m != 0 && aauto_mode == 0) {
+					firebase_fan1_m.set(0);
+					$("#fan1").removeClass("info").addClass("success");
+					$("#fan11").attr('src', 'img/airflow_off.gif');
+					$("#fan12").attr('src', 'img/f0.png');
+				}
+			});
+
+			$("#speed_fan1_s1").click(function () {
+				var firebase_fan1_m = firebase.database().ref().child("afan1_m");
+				if (afan1_m != 1 && aauto_mode == 0) {
+					firebase_fan1_m.set(1);
+					$("#fan1").removeClass("success").addClass("info");
+					$("#fan11").attr('src', 'img/airflow_on.gif');
+					$("#fan12").attr('src', 'img/f1.png');
+				}
+			});
+
+			$("#speed_fan1_s2").click(function () {
+				var firebase_fan1_m = firebase.database().ref().child("afan1_m");
+				if (afan1_m != 2 && aauto_mode == 0) {
+					firebase_fan1_m.set(2);
+					$("#fan1").removeClass("success").addClass("info");
+					$("#fan11").attr('src', 'img/airflow_on.gif');
+					$("#fan12").attr('src', 'img/f2.png');
+				}
+			});
+
+			$("#speed_fan1_s3").click(function () {
+				var firebase_fan1_m = firebase.database().ref().child("afan1_m");
+				if (afan1_m != 3 && aauto_mode == 0) {
+					firebase_fan1_m.set(3);
+					$("#fan1").removeClass("success").addClass("info");
+					$("#fan11").attr('src', 'img/airflow_on.gif');
+					$("#fan12").attr('src', 'img/f3.png');
+				}
+			});
+
+			$("#speed_fan1_s4").click(function () {
+				var firebase_fan1_m = firebase.database().ref().child("afan1_m");
+				if (afan1_m != 4 && aauto_mode == 0) {
+					firebase_fan1_m.set(4);
+					$("#fan1").removeClass("success").addClass("info");
+					$("#fan11").attr('src', 'img/airflow_on.gif');
+					$("#fan12").attr('src', 'img/f4.png');
+				}
+			});
+
+			$("#speed_fan1_s5").click(function () {
+				var firebase_fan1_m = firebase.database().ref().child("afan1_m");
+				if (afan1_m != 5 && aauto_mode == 0) {
+					firebase_fan1_m.set(5);
+					$("#fan1").removeClass("success").addClass("info");
+					$("#fan11").attr('src', 'img/airflow_on.gif');
+					$("#fan12").attr('src', 'img/f5.png');
+				}
+			});
+
 
 			var now = new Date();
 			airflow_log.orderByChild("time").startAt(now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate()).once("value", function (sanp) {
@@ -293,29 +357,29 @@
 
 				if (Arow.fan1 == 1) {
 					$("#fan1").removeClass("success").addClass("info");
-					$("#fan01").attr('src', 'img/airflow_on.gif');
-					$("#fan02").attr('src', 'img/f1.png');
+					$("#fan11").attr('src', 'img/airflow_on.gif');
+					$("#fan12").attr('src', 'img/f1.png');
 				} else if (Arow.fan1 == 2) {
 					$("#fan1").removeClass("success").addClass("info");
-					$("#fan01").attr('src', 'img/airflow_on.gif');
-					$("#fan02").attr('src', 'img/f2.png');
+					$("#fan11").attr('src', 'img/airflow_on.gif');
+					$("#fan12").attr('src', 'img/f2.png');
 				} else if (Arow.fan1 == 3) {
 					$("#fan1").removeClass("success").addClass("info");
-					$("#fan01").attr('src', 'img/airflow_on.gif');
-					$("#fan02").attr('src', 'img/f3.png');
+					$("#fan11").attr('src', 'img/airflow_on.gif');
+					$("#fan12").attr('src', 'img/f3.png');
 				} else if (Arow.fan1 == 4) {
 					$("#fan1").removeClass("success").addClass("info");
-					$("#fan01").attr('src', 'img/airflow_on.gif');
-					$("#fan02").attr('src', 'img/f4.png');
+					$("#fan11").attr('src', 'img/airflow_on.gif');
+					$("#fan12").attr('src', 'img/f4.png');
 				} else if (Arow.fan1 == 5) {
 					$("#fan1").removeClass("success").addClass("info");
-					$("#fan01").attr('src', 'img/airflow_on.gif');
-					$("#fan02").attr('src', 'img/f5.png');
+					$("#fan11").attr('src', 'img/airflow_on.gif');
+					$("#fan12").attr('src', 'img/f5.png');
 				}
 				else {
 					$("#fan1").removeClass("info").addClass("success");
-					$("#fan01").attr('src', 'img/airflow_off.gif');
-					$("#fan02").attr('src', 'img/f0.png');
+					$("#fan11").attr('src', 'img/airflow_off.gif');
+					$("#fan12").attr('src', 'img/f0.png');
 				}
 
 
@@ -335,6 +399,7 @@
 
 			$("#auto_mode").click(function () {
 				var firebase_auto = firebase.database().ref().child("aauto_mode");
+				var firebase_fan1_m = firebase.database().ref().child("afan1_m");
 				if (aauto_mode == 1) {
 					firebase_auto.set(0);
 					aauto_mode = 0;
@@ -345,6 +410,10 @@
 					aauto_mode = 1;
 					$("#auto > .content").text("ON");
 					$("#auto").removeClass("danger").addClass("success");
+					firebase_fan1_m.set(0);
+					$("#fan1").removeClass("info").addClass("success");
+					$("#fan11").attr('src', 'img/airflow_off.gif');
+					$("#fan12").attr('src', 'img/f0.png');
 				}
 			});
 
@@ -521,16 +590,22 @@
 						<div class="dialog success fadeIn animated" id="fan1">
 							<div class="content">
 								<center>
-									<img src="img/airflow_off.gif" id="fan01" width="11%">
-									<img src="img/f0.png" id="fan02" width="38%">
+									<img src="img/airflow_off.gif" id="fan11" width="11%">
+									<img src="img/f0.png" id="fan12" width="38%">
 								</center>
 							</div>
-							<div class="title">Speed AirFlow</div>
+							<!-- <div class="title">Speed AirFlow</div> -->
+							<div class="title">Speed:
+								<button id="speed_fan1_s0" class="Button"> OFF </button>
+								<button id="speed_fan1_s1" class="Button"> 1 </button>
+								<button id="speed_fan1_s2" class="Button"> 2 </button>
+								<button id="speed_fan1_s3" class="Button"> 3 </button>
+								<button id="speed_fan1_s4" class="Button"> 4 </button>
+								<button id="speed_fan1_s5" class="Button"> 5 </button>
+							</div>
+
 						</div>
 					</div>
-
-
-
 
 				</div>
 			</div>
